@@ -5,6 +5,7 @@ from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 
 from employees.models import Employee, EmployeeStatus
@@ -57,7 +58,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         if user.role == UserRole.MANAGER and hasattr(user, 'employee_profile'):
             emp = user.employee_profile
             if emp:
-                return queryset.filter(models.Q(manager=emp) | models.Q(id=emp.id))
+                return queryset.filter(Q(manager=emp) | Q(id=emp.id))
 
         # Regular Employees see only their own profile
         if hasattr(user, 'employee_profile'):
