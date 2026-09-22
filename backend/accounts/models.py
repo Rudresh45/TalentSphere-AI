@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class UserRole(models.TextChoices):
     SUPER_ADMIN = 'SUPER_ADMIN', 'Super Admin'
     HR_ADMIN = 'HR_ADMIN', 'HR Admin'
@@ -18,7 +19,7 @@ class User(AbstractUser):
         choices=UserRole.choices,
         default=UserRole.EMPLOYEE,
         db_index=True,
-        help_text="Role-Based Access Control Role"
+        help_text="Enterprise Role-Based Access Control Role"
     )
     phone = models.CharField(max_length=20, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,6 +34,30 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
+
+    @property
+    def is_super_admin(self):
+        return self.role == UserRole.SUPER_ADMIN or self.is_superuser
+
+    @property
+    def is_hr_admin(self):
+        return self.role in [UserRole.SUPER_ADMIN, UserRole.HR_ADMIN]
+
+    @property
+    def is_hr_manager(self):
+        return self.role in [UserRole.SUPER_ADMIN, UserRole.HR_ADMIN, UserRole.HR_MANAGER]
+
+    @property
+    def is_manager(self):
+        return self.role in [UserRole.SUPER_ADMIN, UserRole.HR_ADMIN, UserRole.HR_MANAGER, UserRole.MANAGER]
+
+    @property
+    def is_finance(self):
+        return self.role in [UserRole.SUPER_ADMIN, UserRole.FINANCE]
+
+    @property
+    def is_recruiter(self):
+        return self.role in [UserRole.SUPER_ADMIN, UserRole.HR_ADMIN, UserRole.RECRUITER]
 
 
 class Profile(models.Model):
