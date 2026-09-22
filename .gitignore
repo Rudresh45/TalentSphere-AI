@@ -41,6 +41,9 @@ dist/
 dist-ssr/
 *.local
 
+# Documentation (Local Only)
+docs/
+
 # IDEs & OS
 .vscode/
 .idea/
